@@ -4,13 +4,15 @@ git.rake
 Hi. Thanks for taking a look at *git.rake*, a set of rake tasks that
 should help you manage multiple git submodules.
 
-For posterity, [the original blog post detailing its use is
-here](http://flavoriffic.blogspot.com/), but that content is
-reproduced here for you. Because I'm a nice guy.
+For posterity, the original blog post detailing its use is at
+
+> [http://flavoriffic.blogspot.com/2008/05/managing-git-submodules-with-gitrake.html](http://flavoriffic.blogspot.com/2008/05/managing-git-submodules-with-gitrake.html)
+
+but that content is reproduced here for you. Because I'm a nice guy.
 
 To install, just do something like:
 
-> git submodule add TODO lib/tasks/git-rake
+> git submodule add git://github.com/mdalessio/git-rake.git lib/tasks/git-rake
 
 And to verify installation, just run:
 
