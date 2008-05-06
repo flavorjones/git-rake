@@ -1,42 +1,32 @@
-##########
+#
 #  rakefile intended to make handling multiple git submodules easy
-##########
 #
+
 #  for nice, consistent output when we run commands
-#
 def puts_cmd(dir, cmd)
   puts "(#{dir}) [#{cmd}]"
 end
 
-#
-#  discover list of submodules,
-#  and invoke callback on each pathname
-#
+#  discover list of submodules, and invoke callback on each pathname
 def for_each_submodule &block
   status = %x{git submodule status}
-  # status.each {|line| puts line unless line =~ /^ /} # print if any are out of sync with origin. [i find i ignore this. YMMV.]
+  # status.each {|line| puts line unless line =~ /^ /} # print if any are out of sync with origin. [i find i ignore this. YMMV. -mike]
   status.each {|line| yield line.split()[1] }
 end
 
-#
 #  for each submodule, chdir to that dir and invoke callback,
-#
 def for_each_submodule_dir &block
   for_each_submodule { |dir| Dir.chdir(dir) { yield dir } }
 end
 
-#
 #  check if git repo needs to be pushed to origin.
 #  works for submodules and superproject.
-#
 def alert_if_needs_pushing(dir = Dir.pwd)
   Dir.chdir(dir) {puts "WARNING: #{dir} needs to be pushed to remote origin" if needs_pushing? }
 end
 
-#
 #  boolean function - does repo need pushing to origin?
 #  based simply on whether the diff is non-blank. note that this may require a 'pull' to be in sync with origin.
-#
 def needs_pushing?(dir = Dir.pwd)
   rval = false
   if get_branch == "master"
@@ -47,10 +37,8 @@ def needs_pushing?(dir = Dir.pwd)
   rval
 end
 
-#
 #  based on 'git status' output, does this repo contain changes that need to be committed?
 #  optional second argument is a specific file (or directory) in the repo.
-#
 def needs_commit?(dir = Dir.pwd, file = nil)
   rval = false
   Dir.chdir(dir) do
@@ -68,9 +56,7 @@ def needs_commit?(dir = Dir.pwd, file = nil)
   rval
 end
 
-#
 #  when passed a 'git status' output report, only tell me what i really need to know.
-#
 def show_changed_files(status)
   status.each_line do |line|
     if line =~ /^#\t/ # only print out the changed files (I think)
@@ -83,9 +69,7 @@ def show_changed_files(status)
   end
 end
 
-#
 #  figure out what branch the pwd's repo is on
-#
 def get_branch(status = `git status`)
   branch = nil
   if match = Regexp.new("^# On branch (.*)").match(status)
@@ -93,11 +77,10 @@ def get_branch(status = `git status`)
   end
 end
 
-#
-#  run git commands, filtering the output
-#
+#  minimal set of git commands, for which we'll filter the output
 vanilla_git_commands = %w{status diff commit push pull}
 
+#  vanilla command #1
 def git_status(dir = Dir.pwd)
   Dir.chdir(dir) do
     status = `git status`
@@ -110,6 +93,7 @@ def git_status(dir = Dir.pwd)
   end
 end
 
+#  vanilla command #2
 def git_diff(dir = Dir.pwd)
   Dir.chdir(dir) do
     puts_cmd dir, "git diff"
@@ -117,6 +101,7 @@ def git_diff(dir = Dir.pwd)
   end
 end
 
+#  vanilla command #3
 def git_commit(dir = Dir.pwd)
   Dir.chdir(dir) do
     if needs_commit? dir
@@ -127,6 +112,7 @@ def git_commit(dir = Dir.pwd)
   end
 end
 
+#  vanilla command #4
 def git_push(dir = Dir.pwd)
   Dir.chdir(dir) do
     if needs_pushing?
@@ -137,6 +123,7 @@ def git_push(dir = Dir.pwd)
   end
 end
 
+#  vanilla command #5
 def git_pull(dir = Dir.pwd)
   Dir.chdir(dir) do
     if get_branch == "master"
@@ -178,13 +165,13 @@ namespace :git do
       end
     end
 
-  end
+  end # namespace :sub
 
 
-  #  needs to be before the metacode
+  #  needs to be declared before the superproject metacode
   task :status => [:branch]
 
-  #  metacode
+  #  metacode. note commit is not handled generically.
   (vanilla_git_commands - ["commit"]).each do |cmd|
     desc "git #{cmd} for superproject and submodules"
     task cmd => "sub:#{cmd}" do
@@ -193,11 +180,13 @@ namespace :git do
     end
   end
 
+  #  special code for commit, depends on update.
   desc "git commit for superproject and submodules"
   task :commit => ["sub:commit","update"] do
     git_commit
   end
 
+  #  bee-yootiful commit log handling.
   desc "Update superproject with current submodules"
   task :update => ["sub:push"] do
     require 'tempfile'
@@ -234,6 +223,7 @@ namespace :git do
       end
   end
 
+  #  sanity check.
   task :branch do
     branches = {}
     for_each_submodule_dir do |dir|
@@ -252,6 +242,7 @@ namespace :git do
     end
   end
 
+  #  i'm sure you have a strong opinion that i'm doing this wrong. well, me too.
   desc "Configure Rails for git"
   task :configure do
     system "echo '*.log' >> log/.gitignore"
