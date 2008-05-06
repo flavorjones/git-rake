@@ -27,7 +27,7 @@ end
 
 #
 #  check if git repo needs to be pushed to origin.
-#  works for submodules and root project.
+#  works for submodules and superproject.
 #
 def alert_if_needs_pushing(dir = Dir.pwd)
   Dir.chdir(dir) {puts "WARNING: #{dir} needs to be pushed to remote origin" if needs_pushing? }
@@ -186,19 +186,19 @@ namespace :git do
 
   #  metacode
   (vanilla_git_commands - ["commit"]).each do |cmd|
-    desc "git #{cmd} for root and submodules"
+    desc "git #{cmd} for superproject and submodules"
     task cmd => "sub:#{cmd}" do
       eval "git_#{cmd}"
       alert_if_needs_pushing
     end
   end
 
-  desc "git commit for root and submodules"
+  desc "git commit for superproject and submodules"
   task :commit => ["sub:commit","update"] do
     git_commit
   end
 
-  desc "Update root with current submodules"
+  desc "Update superproject with current submodules"
   task :update => ["sub:push"] do
     require 'tempfile'
     for_each_submodule do |dir|
@@ -206,7 +206,7 @@ namespace :git do
         logmsg = nil
         currver = %x{git submodule --cached status | fgrep #{dir} | cut -c2- | cut -d' ' -f1}.chomp
         newver = %x{git submodule status | fgrep #{dir} | cut -c2- | cut -d' ' -f1}.chomp
-        #  get all the commit messages from the submodule, so we can tack them onto our root commit message.
+        #  get all the commit messages from the submodule, so we can tack them onto our superproject commit message.
         Dir.chdir(dir) do
           puts "git --no-pager log #{currver}..HEAD"
           logmsg = %x{git --no-pager log #{currver}..#{newver}}
@@ -220,7 +220,7 @@ namespace :git do
     end
   end
   
-  desc "Run command in all submodules and root. Requires CMD='command' environment variable."
+  desc "Run command in all submodules and superproject. Requires CMD='command' environment variable."
   task :for_each => "sub:for_each" do
       command = ENV['CMD']
       if command.nil? or command.empty?
@@ -234,7 +234,7 @@ namespace :git do
       end
   end
 
-  desc "Check that submodules and root are all on the same branch."
+  desc "Check that submodules and superproject are all on the same branch."
   task :branch do
     branches = {}
     for_each_submodule_dir do |dir|
@@ -244,7 +244,7 @@ namespace :git do
     end
     b = get_branch
     branches[b] ||= []
-    branches[b] << "root"
+    branches[b] << "superproject"
     if branches.size == 1
       puts "All repositories are on branch '#{branches.keys.first}'"
     else
