@@ -10,6 +10,9 @@ That content is reproduced here for you. Because I'm a nice guy.
 To install, just do something like:
         git submodule add <TODO> lib/tasks/git-rake
 
+mike dalessio
+mike@csa.net
+
 
 = What git.rake Is =
 
@@ -58,21 +61,22 @@ don't have the right tools. Everytime you decide to "checkpoint" and
 commit your code either locally or up to the shared server, you have
 to:
 
-        * do a lot of iterating through your submodules, doing things
-           like:
+        * iterate (a lot) through your submodules, doing things like:
                 * making sure you're on the right branch,
-                * making sure you've pulled other people's changes
-                  down from the server,
+                * making sure you've pulled changes down from the
+                  server,
                 * making sure that you've committed your changes,
                 * and pushed all your commits
         * and then making sure that your superproject's references to
           the submodules have also been committed and pushed.
 
-If you do this a few times, it's tedious and error-prone. You could
-mistakenly push a version of the superproject that refers to a _local_
-commit of a submodule. When people try to pull that down from the
-server, all hell will break loose because that commit won't exist for
-them. Ugh!
+If you do this a few times, you'll see that it's tedious and
+error-prone. You could mistakenly push a version of the superproject
+that refers to a _local_ commit of a submodule. When people try to
+pull that down from the server, all hell will break loose because that
+commit won't exist for them.
+
+Ugh! This is monkey work. Let's automate it.
 
 
 = Simple Solution =
@@ -101,25 +105,25 @@ And the corresponding tasks that run for the submodules PLUS the superproject:
 	git:push           # git push for superproject and submodules
 	git:status         # git status for superproject and submodules
 
-It's worth noting here that most of these tasks do pretty much just as
-advertised, in some cases less, and certainly nothing more (well,
-maybe a sanity check or two, but no destructive actions).
+It's worth noting here that most of these tasks do pretty much just
+what they advertise, in some cases less, and certainly nothing more
+(well, maybe a sanity check or two, but no destructive actions).
 
-However, git:commit depends on git:update, which has some pixie dust
-in it. More on this below.
+The exception is git:commit, which depends on git:update, and that has
+some pixie dust in it. More on this below.
 
-And that leaves only the following specialty tasks:
+Leaving only the following specialty tasks to be explained:
         git:configure      # Configure Rails for git
         git:update         # Update superproject with current submodules
         
-The first is straight forward: configuration of a rails project for
-use with git.
+The first is simple: configuration of a rails project for use with
+git.
 
 The other, git:update, does two powerful things:
 
-1) (Only if this branch is 'master') Submodules are pushed to the
-shared server. This guarantees that the superproject will not have any
-references to local-only commits.
+1) (Only if on branch 'master') Submodules are pushed to the shared
+server. This guarantees that the superproject will not have any
+references to local-only submodule commits.
 
 2) For each submodule, take the git-log for all uncommitted (in the
 superproject) revisions, and jam them into a superproject commit
@@ -148,35 +152,38 @@ Date:   Mon May 5 20:48:13 2008 -0400
     >
 ----
 
-Excellent! Not only did git:update generate a useful log message for
-me (indicating that we're updating to the latest submodule version),
-but it's also telling me exactly what changes are included in that
-commit!
+Excellent! Not only did git:update automatically generate a useful log
+message for me (indicating that we're updating to the latest submodule
+version), but it's also embedding original commit logs for all the
+changes included in that commit! That makes it much easier to find a
+specific submodule commit in the superproject commit log.
 
 
 = A Note on Branching and Merging =
 
-Note that there are no tasks for handling branching and merging! This
-is intentional. It can be a very dangerous thing to try to read your
+Note that there are no tasks for handling branching and merging. This
+is intentional! It can be a very dangerous thing to try to read your
 mind about actions on branches, and I'm just not up to it today.
 
-For example, let's say I issued a command to tell all submodules to
-copy the current branch ('master') to a new branch ('foo') (this would
-be the equivalent of 'git checkout -b foo master'), but one of the
-submodules already has a branch named foo!
+For example, let's say I invented a command to tell all submodules to
+copy the current branch ('master') to a new branch ('foo') (the
+equivalent of 'git checkout -b foo master'), but one of the submodules
+already has a branch named foo!
 
-Do we reduce this action to a simple 'git checkout foo'? That could be
-very unexpected if we a) forgot we had a branch named 'foo' and b)
-that branch is very different from 'master'.
+Do we reduce this action to a simple 'git checkout foo' for that
+submodule? That could yield unexpected results if we a) forgot we had
+a branch named 'foo' and b) that branch is very different from the
+'master' we expected to copy.
 
 Well, then -- we can delete (or rename) the existing 'foo' branch and
 follow that up by copying 'master' to 'foo'. But then we're silently
-renaming branches that a) could be upstream on the shared server or b)
-we intended to keep around, but forgot to git-stash.
+renaming (or deleting) branches that a) could be upstream on the
+shared server or b) we intended to keep around, but forgot to
+git-stash.
 
 In any case, my point is that it can get complicated, and so I'm
-punting. If you want to copy branches or do simple checkouts, you can
-use the git:for_each command.
+punting. If you want to copy branches or do simple checkouts, you
+should use the git:for_each command.
 
 
 = Everyday Use of git:rake =
@@ -197,29 +204,31 @@ my local repository. Let's first take a look at what's changed:
              #	modified:   app/models/user_mailer.rb
              #	public/images/mail_alert.png		(may need to be 'git add'ed)
         /home/mike/git-repos/demo1/vendor/plugins/pharos_library: master, changes need to be committed
-             #	deleted:    tasks/rake/git.rake		(may need to be 'git add'ed)
+             #	deleted:    tasks/rake/git.rake
 
 You'll notice first of all that, despite having 14 submodules, I'm
-only seeing output for the ones that need commits. It will tell me
-that all submodules are on the same branch. It's even smart enough to
-tell me if a file should be git-added.
+only seeing output for the ones that need commits, and even that
+output is minimal, listing only the specific files and not all the
+cruft in the message. It tells me that all submodules are on the same
+branch. It's even smart enough to tell me if a file may need to be
+git-added.
 
 I'll have to manually chdir to the one submodule and git-add a file,
 but once that's done, I can commit my changes by running:
 
         $ rake git:commit
 
-which will run 'git commit -a -v' for each submodule, firing up the
-editor for commit messages along the way, followed by pushing each
-submodule up to the shared server, and then automagically creating
-verbose commit logs for the superproject.
+which will run 'git commit -a -v' for each submodule, fire up the
+editor for commit messages along the way, push each submodule to the
+shared server, and then automagically create verbose commit logs for
+the superproject.
 
 To pull changes from the shared server:
 
         $ rake git:pull
 
-You'll notice that the output of this command is filtered, so if no
-changes were pulled, you'll see no output. Silence is golden.
+When you run this command, you'll notice that the output is filtered,
+so if no changes were pulled, you'll see no output. Silence is golden.
 
 To push?
 
@@ -261,7 +270,3 @@ probably do:
         * There should probably be some unit/functional tests.
 
 Anyway, the code is all up on github. Go hack it, and send back patches!
-
---
-mike dalessio
-mike@csa.net
