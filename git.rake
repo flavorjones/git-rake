@@ -1,7 +1,7 @@
 #
 #  rakefile intended to make handling multiple git submodules easy
 #
-#  this code is made available under the MIT License (see LICENSE.txt)
+#  this code is made available under the MIT License (see MIT-LICENSE.txt)
 #  Copyright (c) 2007,2008 Mike Dalessio <mike@csa.net>
 #
 
