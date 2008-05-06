@@ -234,7 +234,6 @@ namespace :git do
       end
   end
 
-  desc "Check that submodules and superproject are all on the same branch."
   task :branch do
     branches = {}
     for_each_submodule_dir do |dir|
