@@ -1,6 +1,9 @@
 #
 #  rakefile intended to make handling multiple git submodules easy
 #
+#  this code is made available under the MIT License (see LICENSE.txt)
+#  Copyright (c) 2007,2008 Mike Dalessio <mike@csa.net>
+#
 
 #  for nice, consistent output when we run commands
 def puts_cmd(dir, cmd)
