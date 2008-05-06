@@ -210,8 +210,9 @@ You'll notice first of all that, despite having 14 submodules, I'm
 only seeing output for the ones that need commits, and even that
 output is minimal, listing only the specific files and not all the
 cruft in the message. It tells me that all submodules are on the same
-branch. It's even smart enough to tell me if a file may need to be
-git-added.
+branch. It's smart enough to tell me if a file may need to be
+git-added. It will even alert me when a repo needs to be pushed to the
+origin.
 
 I'll have to manually chdir to the one submodule and git-add a file,
 but once that's done, I can commit my changes by running:
@@ -267,6 +268,10 @@ probably do:
           get away with only pushing the submodules when we push the
           superproject.
 
-        * There should probably be some unit/functional tests.
+        * Parsing the output from various 'git' commands is prone to
+          breakage if the git crew starts modifying some of the strings.
+
+        * There should probably be some unit/functional tests. See
+          previous item.
 
 Anyway, the code is all up on github. Go hack it, and send back patches!
