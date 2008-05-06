@@ -74,7 +74,7 @@ end
 def show_changed_files(status)
   status.each_line do |line|
     if line =~ /^#\t/ # only print out the changed files (I think)
-      if line =~ /new file:|modified:/
+      if line =~ /new file:|modified:|deleted:/
         puts "     #{line}" 
       else
         puts "     #{line.chop}\t\t(may need to be 'git add'ed)" 
