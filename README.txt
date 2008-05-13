@@ -21,6 +21,18 @@ And to verify installation, just run:
 [mike dalessio, <mike@csa.net>]
 
 
+Summary
+-----
+Managing git submodules is a hassle.
+
+* You have to remember to push your submodules before you push your superproject.
+* You have to duplicate log messages in the submodule and the superproject.
+* It's difficult to see the status of each submodule, because 'git status' prints out so much cruft.
+* It's difficult to manage the branches in each submodule.
+* It's also a pain to generally run commands on each submodule (e.g., 'git checkout working')
+
+git.rake makes all of these hassles go away. Read on to see how.
+
 What git.rake Is
 -----
 
