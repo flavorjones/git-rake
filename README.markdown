@@ -1,6 +1,12 @@
 git.rake
 =====
 
+---
+
+__Update 2008-05-21__: Tim Dysinger and Pat Maddox pointed out that git submodules are _inherently not well-suited for frequently updated projects._ Read the comments on the original blog post (URL below) for more details, and __please use git.rake with caution__ on projects where you can't guarantee a submodule's shared repository has not changed between 'pull' and 'push' operation.
+
+---
+
 Hi. Thanks for taking a look at *git.rake*, a set of rake tasks that
 should help you manage multiple git submodules.
 

@@ -1,5 +1,11 @@
 <h1>git.rake</h1>
 
+<hr/>
+
+<p><strong>Update 2008-05-21</strong>: Tim Dysinger and Pat Maddox pointed out that git submodules are <em>inherently not well-suited for frequently updated projects.</em> Read the comments on the original blog post (URL below) for more details, and <strong>please use git.rake with caution</strong> on projects where you can't guarantee a submodule's shared repository has not changed between 'pull' and 'push' operation.</p>
+
+<hr/>
+
 <p>Hi. Thanks for taking a look at <em>git.rake</em>, a set of rake tasks that
 should help you manage multiple git submodules.</p>
 
@@ -23,7 +29,7 @@ should help you manage multiple git submodules.</p>
     <p>rake -T git</p>
 </blockquote>
 
-<p>[mike dalessio, <a href="&#x6D;&#x61;&#105;&#x6C;&#x74;&#111;:&#x6D;&#105;&#107;&#x65;&#x40;&#x63;&#115;&#x61;&#x2E;&#110;&#101;&#x74;">&#x6D;&#105;&#107;&#x65;&#x40;&#x63;&#115;&#x61;&#x2E;&#110;&#101;&#x74;</a>]</p>
+<p>[mike dalessio, <a href="&#109;&#x61;&#105;&#x6C;&#116;&#111;:&#x6D;&#105;&#x6B;&#x65;&#x40;&#099;&#115;&#097;&#x2E;&#110;&#101;&#116;">&#x6D;&#105;&#x6B;&#x65;&#x40;&#099;&#115;&#097;&#x2E;&#110;&#101;&#116;</a>]</p>
 
 <h2>Summary</h2>
 
