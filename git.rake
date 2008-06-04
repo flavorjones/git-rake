@@ -256,6 +256,7 @@ namespace :git do
     system "echo 'cache' >> tmp/.gitignore"
     system "echo 'pids' >> tmp/.gitignore"
     system "echo 'sockets' >> tmp/.gitignore"
+    system "echo 'plugin_assets' >> public/.gitignore"
   end
 
 end
