@@ -260,4 +260,18 @@ namespace :git do
     system "echo 'data' >> .gitignore"
   end
 
+  desc "Tag superproject and submodules. Requires TAG='tag-name'."
+  task :tag do
+    unless tag = ENV['TAG']
+      puts "ERROR: no TAG='tag-name' specified."
+    else
+      for_each_submodule_dir do |dir|
+        system "git tag #{tag}"
+        system "git push --tags"
+      end
+      system "git tag #{tag}"
+      system "git push --tags"
+    end
+  end
+
 end
