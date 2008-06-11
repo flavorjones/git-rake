@@ -29,7 +29,7 @@ should help you manage multiple git submodules.</p>
     <p>rake -T git</p>
 </blockquote>
 
-<p>[mike dalessio, <a href="&#109;&#x61;&#105;&#x6C;&#116;&#111;:&#x6D;&#105;&#x6B;&#x65;&#x40;&#099;&#115;&#097;&#x2E;&#110;&#101;&#116;">&#x6D;&#105;&#x6B;&#x65;&#x40;&#099;&#115;&#097;&#x2E;&#110;&#101;&#116;</a>]</p>
+<p>[mike dalessio, <a href="&#x6D;&#097;&#x69;&#108;&#116;&#111;:m&#105;&#107;&#x65;&#x40;&#x63;&#x73;&#097;&#046;&#x6E;&#x65;&#116;">m&#105;&#107;&#x65;&#x40;&#x63;&#x73;&#097;&#046;&#x6E;&#x65;&#116;</a>]</p>
 
 <h2>Summary</h2>
 
@@ -43,7 +43,20 @@ should help you manage multiple git submodules.</p>
 <li>It's also a pain to generally run commands on each submodule (e.g., 'git checkout working')</li>
 </ul>
 
-<p>git.rake makes all of these hassles go away. Read on to see how.</p>
+<p>git.rake makes all of these hassles go away by providing these tasks:</p>
+
+<pre><code>    rake git:commit        # git commit for superproject and submodules
+    rake git:configure     # Configure Rails for git
+    rake git:diff          # git diff for superproject and submodules
+    rake git:for_each      # Run command in all submodules and superproject.
+    rake git:pull          # git pull for superproject and submodules
+    rake git:push          # git push for superproject and submodules
+    rake git:status        # git status for superproject and submodules
+    rake git:tag           # Tag superproject and submodules.
+    rake git:update        # Update superproject with current submodules
+</code></pre>
+
+<p>Read on for implementation details and usage.</p>
 
 <h2>What git.rake Is</h2>
 
@@ -124,7 +137,7 @@ pushing and committing.</li>
 <pre><code>    git:sub:commit     # git commit for submodules
     git:sub:diff       # git diff for submodules
     git:sub:for_each   # Execute a command in the root directory of each submodule.\
-                         Requires CMD='command' environment variable.
+                         Requires DO='command' environment variable.
     git:sub:pull       # git pull for submodules
     git:sub:push       # git push for submodules
     git:sub:status     # git status for submodules
@@ -135,7 +148,7 @@ pushing and committing.</li>
 <pre><code>    git:commit         # git commit for superproject and submodules
     git:diff           # git diff for superproject and submodules
     git:for_each       # Run command in all submodules and superproject. \
-                         Requires CMD='command' environment variable.
+                         Requires DO='command' environment variable.
     git:pull           # git pull for superproject and submodules
     git:push           # git push for superproject and submodules
     git:status         # git status for superproject and submodules
@@ -283,7 +296,7 @@ master is no different from origin/master. So it's silent and fast.</p>
 <p>Let's say I want to copy the current branch, <code>master</code>, to a new
 branch, <code>working</code>.</p>
 
-<pre><code>    $ rake git:for_each CMD='git checkout -b working master'
+<pre><code>    $ rake git:for_each DO='git checkout -b working master'
 </code></pre>
 
 <p>If the command fails for any submodules, the rake task will terminate
@@ -292,8 +305,8 @@ immediately.</p>
 <p>Merging changes from 'working' back into 'master' for every submodule
 (and the superproject)?</p>
 
-<pre><code>    $ rake git:for_each CMD='git checkout master'
-    $ rake git:for_each CMD='git merge working'
+<pre><code>    $ rake git:for_each DO='git checkout master'
+    $ rake git:for_each DO='git merge working'
 </code></pre>
 
 <h2>What git.rake Doesn't Do</h2>
