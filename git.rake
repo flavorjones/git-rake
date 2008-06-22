@@ -160,7 +160,7 @@ namespace :git do
         for_each_submodule_dir do |dir|
           puts_cmd dir, command
           rcode = system command
-          if rcode == false || $? != 0
+          if ENV['IGNERR'].nil? and (rcode == false || $? != 0)
             puts "ERROR: command failed with exit code #{$?}"
             exit $?
           end
