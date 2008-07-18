@@ -32,9 +32,11 @@ end
 #  based simply on whether the diff is non-blank. note that this may require a 'pull' to be in sync with origin.
 def needs_pushing?(dir = Dir.pwd)
   rval = false
-  if get_branch == "master"
+  branches ||= %x{git branch -r}.split # yeah, slow. should we cache it?
+  branch = get_branch
+  if branches.include? "origin/#{branch}"
     Dir.chdir(dir) do
-      rval = (%x{git diff master..origin/master}.size > 0)
+      rval = (%x{git diff "#{branch}"..origin/"#{branch}"}.size > 0)
     end
   end
   rval
