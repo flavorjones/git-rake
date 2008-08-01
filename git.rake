@@ -260,6 +260,7 @@ namespace :git do
     system "echo 'sockets' >> tmp/.gitignore"
     system "echo 'plugin_assets' >> public/.gitignore"
     system "echo 'data' >> .gitignore"
+    system "echo 'TAGS' >> .gitignore"
   end
 
   desc "Tag superproject and submodules. Optional TAG='tag-name'."
