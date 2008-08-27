@@ -277,4 +277,13 @@ namespace :git do
     system "git push --tags"
   end
 
+  # shortcut aliases
+  task :c => [:commit]
+  task :co => [:commit]
+  task :s => [:status]
+  task :st => [:status]
+  task :u => [:update]
+  task :up => [:update]
+  task :d => [:diff]
+  task :each => [:for_each]
 end
