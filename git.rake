@@ -153,11 +153,12 @@ namespace :git do
       end
     end
 
-    desc "Execute a command in the root directory of each submodule. Requires DO='command' environment variable."
+    desc "Execute a command in the root directory of each submodule. Requires \"do='command'\" environment variable."
     task :for_each do
-      command = ENV['CMD'] || ENV['DO']
+      command = ENV['CMD'] || ENV['DO'] || ENV['do']
       if command.nil? or command.empty?
-        puts "ERROR: no DO='command' specified."
+        puts "ERROR: no \"do='command'\" specified."
+        exit 1
       else
         for_each_submodule_dir do |dir|
           puts_cmd dir, command
@@ -214,11 +215,12 @@ namespace :git do
     end
   end
   
-  desc "Run command in all submodules and superproject. Requires DO='command' environment variable."
+  desc "Run command in all submodules and superproject. Requires \"do='command'\" environment variable."
   task :for_each => "sub:for_each" do
-      command = ENV['CMD'] || ENV['DO']
+      command = ENV['CMD'] || ENV['DO'] || ENV['do']
       if command.nil? or command.empty?
         puts "ERROR: no DO='command' specified."
+        exit 1
       else
         puts_cmd Dir.pwd, command
         rcode = system(command)
