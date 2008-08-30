@@ -32,14 +32,19 @@ end
 #  based simply on whether the diff is non-blank. note that this may require a 'pull' to be in sync with origin.
 def needs_pushing?(dir = Dir.pwd)
   rval = false
-  branches ||= %x{git branch -r}.split # yeah, slow. should we cache it?
   branch = get_branch
-  if branches.include? "origin/#{branch}"
+  if is_origin_branch? branch
     Dir.chdir(dir) do
       rval = (%x{git diff "#{branch}"..origin/"#{branch}"}.size > 0)
     end
   end
   rval
+end
+
+# assumes we've already Dir.chdir()ed
+def is_origin_branch? branch
+  branches ||= %x{git branch -r}.split # yeah, slow. should we cache it?
+  branches.include? "origin/#{branch}"
 end
 
 #  based on 'git status' output, does this repo contain changes that need to be committed?
@@ -131,7 +136,7 @@ end
 #  vanilla command #5
 def git_pull(dir = Dir.pwd)
   Dir.chdir(dir) do
-    if get_branch == "master"
+    if is_origin_branch? get_branch
       puts_cmd dir, "git pull"
       status = %x{git pull}
       puts status unless status =~ /Already up-to-date/
