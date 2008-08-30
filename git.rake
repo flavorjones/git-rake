@@ -159,7 +159,7 @@ namespace :git do
     end
 
     desc "Execute a command in the root directory of each submodule. Requires \"do='command'\" environment variable."
-    task :for_each do
+    task :each do
       command = ENV['CMD'] || ENV['DO'] || ENV['do']
       if command.nil? or command.empty?
         puts "ERROR: no \"do='command'\" specified."
@@ -221,7 +221,7 @@ namespace :git do
   end
   
   desc "Run command in all submodules and superproject. Requires \"do='command'\" environment variable."
-  task :for_each => "sub:for_each" do
+  task :each => "sub:each" do
       command = ENV['CMD'] || ENV['DO'] || ENV['do']
       if command.nil? or command.empty?
         puts "ERROR: no DO='command' specified."
@@ -285,6 +285,8 @@ namespace :git do
   end
 
   # shortcut aliases
+  task :for_each => [:each]
+  task :'sub:for_each' => [:'sub:each']
   task :c => [:commit]
   task :co => [:commit]
   task :s => [:status]
