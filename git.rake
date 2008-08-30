@@ -287,12 +287,11 @@ namespace :git do
   # shortcut aliases
   task :for_each => [:each]
   task :'sub:for_each' => [:'sub:each']
-  task :c => [:commit]
-  task :co => [:commit]
-  task :s => [:status]
-  task :st => [:status]
-  task :u => [:update]
-  task :up => [:update]
-  task :d => [:diff]
-  task :each => [:for_each]
+
+  # automatically-generated aliases - omitted are: :each, :configure, all the :subs
+  # this way git:s, git:st, git:sta, git:stat, git:statu all point to git:status
+  require 'abbrev'
+  ['commit', 'diff', 'pull', 'push', 'status', 'tag', 'update'].abbrev.each do |k, v|
+    task k.to_sym => [v.to_sym] unless k == v
+  end
 end
