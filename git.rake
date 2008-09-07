@@ -208,8 +208,8 @@ namespace :git do
         newver = %x{git submodule status | fgrep #{dir} | cut -c2- | cut -d' ' -f1}.chomp
         #  get all the commit messages from the submodule, so we can tack them onto our superproject commit message.
         Dir.chdir(dir) do
-          puts "git --no-pager log #{currver}..HEAD"
-          logmsg = %x{git --no-pager log #{currver}..#{newver}}
+          puts "git --no-pager whatchanged #{currver}..#{newver}"
+          logmsg = %x{git --no-pager whatchanged #{currver}..#{newver}}
         end
         commitmsg = "updating to latest #{dir}\n\n" + logmsg.collect{|line| "> #{line}"}.join;
         puts_cmd Dir.pwd, "git commit #{dir}"
