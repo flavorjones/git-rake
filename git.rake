@@ -204,8 +204,8 @@ namespace :git do
     for_each_submodule do |dir|
       if needs_commit?(Dir.pwd, dir)
         logmsg = nil
-        currver = %x{git submodule --cached status | fgrep #{dir} | cut -c2- | cut -d' ' -f1}.chomp
-        newver = %x{git submodule status | fgrep #{dir} | cut -c2- | cut -d' ' -f1}.chomp
+        newver = %x{cd #{dir} && git log --pretty=oneline -n1 | cut -d' ' -f1}.chomp
+        currver = %x{git submodule status | fgrep #{dir} | cut -c2- | cut -d' ' -f1}.chomp
         #  get all the commit messages from the submodule, so we can tack them onto our superproject commit message.
         Dir.chdir(dir) do
           puts "git --no-pager whatchanged #{currver}..#{newver}"
