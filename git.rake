@@ -204,17 +204,18 @@ namespace :git do
     for_each_submodule do |dir|
       if needs_commit?(Dir.pwd, dir)
         logmsg = nil
-        newver = %x{cd #{dir} && git log --pretty=oneline -n1 | cut -d' ' -f1}.chomp
+        %x{git reset HEAD sub} # so 'git submodule status' gives us the current version
         currver = %x{git submodule status | fgrep #{dir} | cut -c2- | cut -d' ' -f1}.chomp
+        newver = %x{cd #{dir} && git log --pretty=oneline -n1 | cut -d' ' -f1}.chomp
         #  get all the commit messages from the submodule, so we can tack them onto our superproject commit message.
         Dir.chdir(dir) do
           puts "git --no-pager whatchanged #{currver}..#{newver}"
           logmsg = %x{git --no-pager whatchanged #{currver}..#{newver}}
         end
         commitmsg = "updating to latest #{dir}\n\n" + logmsg.collect{|line| "> #{line}"}.join;
-        puts_cmd Dir.pwd, "git commit #{dir}"
         tp = ''
         Tempfile.open('rake-git-update') {|tf| tf.write(commitmsg) ; tp = tf.path }
+        puts_cmd Dir.pwd, "git commit -F #{tp} #{dir}"
         system "git commit -F #{tp} #{dir}"
       end
     end
