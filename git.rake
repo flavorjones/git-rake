@@ -204,8 +204,7 @@ namespace :git do
     for_each_submodule do |dir|
       if needs_commit?(Dir.pwd, dir)
         logmsg = nil
-        %x{git reset HEAD sub} # so 'git submodule status' gives us the current version
-        currver = %x{git submodule status | fgrep #{dir} | cut -c2- | cut -d' ' -f1}.chomp
+        currver = %x{git submodule status --cached | fgrep #{dir} | cut -c2- | cut -d' ' -f1}.chomp
         newver = %x{cd #{dir} && git log --pretty=oneline -n1 | cut -d' ' -f1}.chomp
         #  get all the commit messages from the submodule, so we can tack them onto our superproject commit message.
         Dir.chdir(dir) do
